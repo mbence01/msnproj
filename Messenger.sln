@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messenger", "Messenger\Messenger.csproj", "{43F13032-6148-4147-8320-39F9B08D798B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{43F13032-6148-4147-8320-39F9B08D798B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43F13032-6148-4147-8320-39F9B08D798B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43F13032-6148-4147-8320-39F9B08D798B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43F13032-6148-4147-8320-39F9B08D798B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9C1C18FB-96C8-4628-B9F2-F6DC18A9075A}
+	EndGlobalSection
+EndGlobal
