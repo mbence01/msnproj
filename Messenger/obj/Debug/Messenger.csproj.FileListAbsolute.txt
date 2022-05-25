@@ -1,0 +1,11 @@
+C:\Users\Admin\source\repos\Messenger\Messenger\bin\Debug\Messenger.exe.config
+C:\Users\Admin\source\repos\Messenger\Messenger\bin\Debug\Messenger.exe
+C:\Users\Admin\source\repos\Messenger\Messenger\bin\Debug\Messenger.pdb
+C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.csproj.AssemblyReference.cache
+C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.csproj.SuggestedBindingRedirects.cache
+C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.LoginForm.resources
+C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.Properties.Resources.resources
+C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.csproj.GenerateResource.cache
+C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.csproj.CoreCompileInputs.cache
+C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.exe
+C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.pdb
