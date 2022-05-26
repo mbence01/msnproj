@@ -46,22 +46,16 @@ namespace Messenger
             {
                 UserSession.LoggedInUser = user;
 
-                Console.WriteLine("Username: '" + user.Username + "'");
-                Console.WriteLine("E-mail: '" + user.Email + "'");
-                Console.WriteLine("ID: '" + user.Id + "'");
-                Console.WriteLine("RegDate: '" + user.RegDate.ToString() + "'");
-
                 MessageBox.Show($"You are successfully logged in as {user.Username}!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                Program.ChangeForm(this, Program.mainForm);
                 return;
             }
         }
 
         private void signUpText_Click(object sender, EventArgs e)
         {
-            RegForm regForm = new RegForm();
-
-            regForm.Show();
-            this.Visible = false;
+            Program.ChangeForm(this, Program.regForm);
         }
     }
 }
