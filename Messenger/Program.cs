@@ -8,6 +8,11 @@ namespace Messenger
 {
     internal static class Program
     {
+        public static Form loginForm;
+        public static Form regForm;
+        public static Form mainForm;
+        public static Form newMailForm;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -16,7 +21,24 @@ namespace Messenger
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new LoginForm());
+            CreateWindows();
+            Application.Run(loginForm);
+        }
+
+        private static void CreateWindows()
+        {
+            loginForm = new LoginForm();
+            regForm = new RegForm();
+            mainForm = new MainForm();
+            newMailForm = new NewMailForm();
+        }
+
+        public static void ChangeForm(Form from, Form to, bool hidePrevious = true)
+        {
+            if(hidePrevious)
+                from.Hide();
+
+            to.Show();
         }
     }
 }
