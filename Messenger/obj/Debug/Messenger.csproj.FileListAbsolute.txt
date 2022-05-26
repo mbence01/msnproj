@@ -10,3 +10,5 @@ C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.csproj.CoreC
 C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.exe
 C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.pdb
 C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.RegForm.resources
+C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.MainForm.resources
+C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.NewMailForm.resources
