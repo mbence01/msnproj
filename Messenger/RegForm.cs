@@ -22,10 +22,7 @@ namespace Messenger
 
         private void signUpText_Click(object sender, EventArgs e)
         {
-            LoginForm loginForm = new LoginForm();
-
-            loginForm.Show();
-            this.Visible = false;
+            Program.ChangeForm(this, Program.loginForm);
         }
 
         private void regBtn_Click(object sender, EventArgs e)
@@ -84,9 +81,7 @@ namespace Messenger
 
             MessageBox.Show("Your registration was successfull. Please log in in order to use this application.", "Register successfull", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            LoginForm loginForm = new LoginForm();
-            loginForm.Show();
-            this.Visible = false;
+            Program.ChangeForm(this, Program.loginForm);
         }
     }
 }
