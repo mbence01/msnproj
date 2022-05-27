@@ -121,20 +121,8 @@ namespace Messenger
             if (id == 0)
                 return new List<object>() { -1, "ID of User instance is not set. Set the ID and try again." };
 
-            string sqlCmd = "UPDATE " +
-                            "   Users " +
-                            "SET " +
-                            "   Users.Username = @username," +
-                            "   Users.EmailAddr = @email," +
-                            "   UserPasswords.PasswordHash = @hash " +
-                            "FROM " +
-                            "   Users " +
-                            "   INNER JOIN " +
-                            "       UserPasswords " +
-                            "   ON  " +
-                            "       Users.ID = UserPasswords.UserID " +
-                            "WHERE Users.ID = @userid";
-
+            string sqlCmd = "UPDATE Users SET Users.Username = @username, Users.EmailAddr = @email, UserPasswords.PasswordHash = @hash FROM Users INNER JOIN UserPasswords ON Users.ID = UserPasswords.UserID WHERE Users.ID = @userid";
+            
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 try
@@ -143,10 +131,34 @@ namespace Messenger
 
                     SqlCommand cmd = new SqlCommand(sqlCmd, conn);
 
-                    cmd.Parameters.Add(new SqlParameter("@userid", this.id));
-                    cmd.Parameters.Add(new SqlParameter("@username", this.username));
-                    cmd.Parameters.Add(new SqlParameter("@email", this.email));
-                    cmd.Parameters.Add(new SqlParameter("@hash", this.password));
+                    SqlParameter useridParam = new SqlParameter("@userid", this.id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    SqlParameter usernameParam = new SqlParameter("@username", this.username)
+                    {
+                        DbType = System.Data.DbType.String,
+                        Size = 32
+                    };
+
+                    SqlParameter emailParam = new SqlParameter("@email", this.email)
+                    {
+                        DbType = System.Data.DbType.String,
+                        Size = 64
+                    };
+
+                    SqlParameter pwdhashParam = new SqlParameter("@hash", this.password)
+                    {
+                        DbType = System.Data.DbType.String,
+                        Size = 64
+                    };
+
+                    cmd.Parameters.Add(useridParam);
+                    cmd.Parameters.Add(usernameParam);
+                    cmd.Parameters.Add(emailParam);
+                    cmd.Parameters.Add(pwdhashParam);
 
                     cmd.Prepare();
 
