@@ -161,27 +161,14 @@ namespace Messenger
 
             return new List<object>() { 0, "Mail has successfully been created." };
         }
-
-        //TODO: Finish class
-        /*
         public List<object> Update()
         {
             if (id == 0)
-                return new List<object>() { -1, "ID of User instance is not set. Set the ID and try again." };
+                return new List<object>() { -1, "ID of Mail instance is not set. Set the ID and try again." };
 
-            string sqlCmd = "UPDATE " +
-                            "   Users " +
-                            "SET " +
-                            "   Users.Username = @username," +
-                            "   Users.EmailAddr = @email," +
-                            "   UserPasswords.PasswordHash = @hash " +
-                            "FROM " +
-                            "   Users " +
-                            "   INNER JOIN " +
-                            "       UserPasswords " +
-                            "   ON  " +
-                            "       Users.ID = UserPasswords.UserID " +
-                            "WHERE Users.ID = @userid";
+            StringBuilder sb = new StringBuilder();
+
+            string sqlCmd = "UPDATE Mails SET SenderID = @senderID, AddresseeID = @addresseeID, MailSubject = @mailSubject, MailBody = @mailBody, ParentMail = @parentMail WHERE ID = @mailID";
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -191,17 +178,53 @@ namespace Messenger
 
                     SqlCommand cmd = new SqlCommand(sqlCmd, conn);
 
-                    cmd.Parameters.Add(new SqlParameter("@userid", this.id));
-                    cmd.Parameters.Add(new SqlParameter("@username", this.username));
-                    cmd.Parameters.Add(new SqlParameter("@email", this.email));
-                    cmd.Parameters.Add(new SqlParameter("@hash", this.password));
+                    SqlParameter senderidParam = new SqlParameter("@senderID", this.sender.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    SqlParameter addresseeidParam = new SqlParameter("@addresseeID", this.addressee.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    SqlParameter subjectParam = new SqlParameter("@mailSubject", this.mailSubject)
+                    {
+                        DbType = System.Data.DbType.String,
+                        Size = 128
+                    };
+
+                    SqlParameter bodyParam = new SqlParameter("@mailBody", this.mailBody)
+                    {
+                        DbType = System.Data.DbType.String,
+                        Size = 8000
+                    };
+                    SqlParameter parentmailParam = new SqlParameter("@parentMail", this.parentMail.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+                    SqlParameter mailidParam = new SqlParameter("@mailID", this.id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    cmd.Parameters.Add(senderidParam);
+                    cmd.Parameters.Add(addresseeidParam);
+                    cmd.Parameters.Add(subjectParam);
+                    cmd.Parameters.Add(bodyParam);
+                    cmd.Parameters.Add(parentmailParam);
+                    cmd.Parameters.Add(mailidParam);
 
                     cmd.Prepare();
 
                     int rowsAffected = cmd.ExecuteNonQuery();
 
                     if (rowsAffected == 0)
-                        return new List<object>() { -1, "User has not been updated. Unknown error occurred." };
+                        return new List<object>() { -1, "Mail has not been updated. Unknown error occurred." };
                 }
                 catch (Exception e)
                 {
@@ -212,13 +235,12 @@ namespace Messenger
                     return new List<object>() { -1, e.Message };
                 }
             }
-            return new List<object>() { 0, "User has successfully been updated in database." };
+            return new List<object>() { 0, "Mail has successfully been updated in database." };
         }
 
-        public static User AddNew(string username, string password, string email)
+        public static Mail AddNew(int senderID, int addresseeID, string mailSubject, string mailBody, int? parentMail)
         {
-            string sqlCmd = "add_new_user";
-            string hashedPwd = CreateHashedPassword(password);
+            string sqlCmd = "INSERT INTO Mails(SenderID, AddresseeID, MailSubject, MailBody, ParentMail) VALUES(@senderid, @addresseeid, @subject, @body, @parent)";
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -228,16 +250,23 @@ namespace Messenger
 
                     SqlCommand cmd = new SqlCommand(sqlCmd, conn) { CommandType = System.Data.CommandType.StoredProcedure };
 
-                    cmd.Parameters.Add(new SqlParameter("@username", username));
-                    cmd.Parameters.Add(new SqlParameter("@password", hashedPwd));
-                    cmd.Parameters.Add(new SqlParameter("@email", email));
+                    cmd.Parameters.Add(new SqlParameter("@senderid", senderID));
+                    cmd.Parameters.Add(new SqlParameter("@addresseeid", addresseeID));
+                    cmd.Parameters.Add(new SqlParameter("@body", mailBody));
 
-                    var returnParam = cmd.Parameters.Add("@ReturnVal", System.Data.SqlDbType.Int);
-                    returnParam.Direction = System.Data.ParameterDirection.ReturnValue;
+                    if(mailSubject == null || mailSubject.Length == 0)
+                        cmd.Parameters.Add(new SqlParameter("@subject", null));
+                    else
+                        cmd.Parameters.Add(new SqlParameter("@subject", mailSubject));
 
-                    cmd.ExecuteNonQuery();
+                    if (parentMail.HasValue)
+                        cmd.Parameters.Add(new SqlParameter("@parent", parentMail));
+                    else
+                        cmd.Parameters.Add(new SqlParameter("@parent", null));
 
-                    return new User((int)returnParam.Value);
+                    int insertedId = (int)cmd.ExecuteScalar();
+
+                    return new Mail(insertedId);
                 }
                 catch (Exception e)
                 {
@@ -250,15 +279,19 @@ namespace Messenger
             }
         }
 
-        public static List<User> FindBy(string username, string password = null)
+        public static List<Mail> FindBy(int? senderid = null, int? addresseeid = null)
         {
-            List<User> retArr = new List<User>();
+            List<Mail> retArr = new List<Mail>();
             string sqlCmd;
 
-            if (password == null)
-                sqlCmd = "SELECT Users.ID AS ID FROM Users WHERE Username = @username";
+            if (senderid.HasValue && !addresseeid.HasValue)
+                sqlCmd = "SELECT * FROM Mails WHERE SenderID = @senderid";
+            else if(!senderid.HasValue && addresseeid.HasValue)
+                sqlCmd = "SELECT * FROM Mails WHERE AddresseeID = @addresseeid";
+            else if(senderid.HasValue && addresseeid.HasValue)
+                sqlCmd = "SELECT * FROM Mails WHERE SenderID = @senderid AND AddresseeID = @addresseeid";
             else
-                sqlCmd = "SELECT Users.ID AS ID FROM Users INNER JOIN UserPasswords ON Users.ID = UserPasswords.UserID WHERE Username = @username AND PasswordHash = @password";
+                sqlCmd = "SELECT * FROM Mails";
 
 
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -269,22 +302,23 @@ namespace Messenger
 
                     SqlCommand cmd = new SqlCommand(sqlCmd, conn);
 
-                    SqlParameter usernameParam = new SqlParameter("@username", username)
+                    SqlParameter senderParam = new SqlParameter("@senderid", senderid)
                     {
-                        DbType = System.Data.DbType.String,
-                        Size = 32
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
                     };
 
-                    SqlParameter passwordParam = new SqlParameter("@password", CreateHashedPassword(password))
+                    SqlParameter addresseParam = new SqlParameter("@addresseid", addresseeid)
                     {
-                        DbType = System.Data.DbType.String,
-                        Size = 64
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
                     };
 
-                    cmd.Parameters.Add(usernameParam);
+                    if (senderid.HasValue)
+                        cmd.Parameters.Add(senderParam);
+                    if (addresseeid.HasValue)
+                        cmd.Parameters.Add(addresseeid);
 
-                    if (password != null)
-                        cmd.Parameters.Add(passwordParam);
 
                     cmd.Prepare();
 
@@ -292,10 +326,10 @@ namespace Messenger
                     {
                         while (reader.Read())
                         {
-                            int userID = (int)reader.GetValue(reader.GetOrdinal("ID"));
+                            int mailID = (int)reader.GetValue(reader.GetOrdinal("ID"));
 
-                            User userObj = new User(userID);
-                            retArr.Add(userObj);
+                            Mail mailObj = new Mail(mailID);
+                            retArr.Add(mailObj);
                         }
                     }
                 }
@@ -310,42 +344,5 @@ namespace Messenger
             }
             return retArr;
         }
-
-        public static bool IsEmailAddrExists(string email)
-        {
-            List<User> retArr = new List<User>();
-            string sqlCmd = "SELECT * FROM Users WHERE EmailAddr = @email";
-
-            using (SqlConnection conn = new SqlConnection(connStr))
-            {
-                try
-                {
-                    conn.Open();
-
-                    SqlCommand cmd = new SqlCommand(sqlCmd, conn);
-
-                    SqlParameter emailParam = new SqlParameter("@email", email)
-                    {
-                        DbType = System.Data.DbType.String,
-                        Size = 64
-                    };
-
-                    cmd.Parameters.Add(emailParam);
-                    cmd.Prepare();
-
-                    var foundRecords = cmd.ExecuteScalar();
-
-                    return foundRecords != null;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(
-                        System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
-                        System.Reflection.MethodBase.GetCurrentMethod().Name +
-                        " -> " + e.Message);
-                    return false;
-                }
-            }
-        }*/
     }
 }
