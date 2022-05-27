@@ -12,17 +12,27 @@ namespace Messenger
     {
         private static string connStr = "Server=localhost;Database=Messenger;Integrated Security=SSPI;";
 
+        public static int LOGIN_TYPE_LOGIN  = 0;
+        public static int LOGIN_TYPE_LOGOUT = 1;
+
         private readonly int id;
         private string username;
         private string password;
         private string email;
         private DateTime regDate;
 
+        public List<object> USERDATA_SET_MESSAGE;
+
         public User(int id)
         {
             this.id = id;
 
-            SetUserData();
+            USERDATA_SET_MESSAGE = SetUserData();
+        }
+
+        public override string ToString()
+        {
+            return email;
         }
 
         public int Id { 
@@ -275,10 +285,10 @@ namespace Messenger
             return retArr;
         }
 
-        public static bool IsEmailAddrExists(string email)
+        public static int IsEmailAddrExists(string email)
         {
             List<User> retArr = new List<User>();
-            string sqlCmd = "SELECT * FROM Users WHERE EmailAddr = @email";
+            string sqlCmd = "SELECT ID FROM Users WHERE EmailAddr = @email";
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -297,9 +307,15 @@ namespace Messenger
                     cmd.Parameters.Add(emailParam);
                     cmd.Prepare();
 
-                    var foundRecords = cmd.ExecuteScalar();
-
-                    return foundRecords != null;
+                    using(SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while(reader.Read())
+                        {
+                            int userID = (int)reader.GetValue(reader.GetOrdinal("ID"));
+                            return userID;
+                        }
+                    }
+                    return 0;
                 }
                 catch (Exception e)
                 {
@@ -307,7 +323,37 @@ namespace Messenger
                         System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
                         System.Reflection.MethodBase.GetCurrentMethod().Name +
                         " -> " + e.Message);
-                    return false;
+                    return 0;
+                }
+            }
+        }
+
+        public void AddUserLog(int type)
+        {
+            if (type != 0 && type != 1)
+                return;
+
+            string sqlCmd = "INSERT INTO UserLogins(UserID, LoginType) VALUES(@userid, @logintype)";
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(sqlCmd, conn);
+
+                    cmd.Parameters.Add(new SqlParameter("@userid", this.id));
+                    cmd.Parameters.Add(new SqlParameter("@logintype", type));
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(
+                        System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
+                        System.Reflection.MethodBase.GetCurrentMethod().Name +
+                        " -> " + e.Message);
                 }
             }
         }
