@@ -65,7 +65,7 @@ namespace Messenger
                 return;
             }
 
-            if(User.IsEmailAddrExists(email))
+            if(User.IsEmailAddrExists(email) != 0)
             {
                 MessageBox.Show("The given e-mail address is already in use. Please select another e-mail address.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
