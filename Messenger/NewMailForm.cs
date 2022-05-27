@@ -35,8 +35,14 @@ namespace Messenger
             string subjectText = textSubject.Text;
             string bodyText = textBody.Text;
             object reply;
+            int? parentMail;
             
             UserSession.SessionVars.TryGetValue("MailReply", out reply);
+
+            if ((int)reply == 0)
+                parentMail = null;
+            else
+                parentMail = (int)reply;
 
             if(fromText == null || fromText.Length == 0 || toText == null || toText.Length == 0)
             {
@@ -56,13 +62,25 @@ namespace Messenger
                 return;
             }
 
-            if(!User.IsEmailAddrExists(toText))
+
+            int userIDWithGivenEmail = User.IsEmailAddrExists(toText);
+
+            if(userIDWithGivenEmail == 0)
             {
                 MessageBox.Show("The given e-mail address is not registered. Check if you mistyped the address.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // TODO: Insert the new mail to the db
+            Mail newMail = Mail.AddNew(UserSession.LoggedInUser.Id, userIDWithGivenEmail, subjectText, bodyText, parentMail);
+
+            if(newMail == null)
+            {
+                MessageBox.Show("An error has occured when trying to save your e-mail. Please try again later.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            MessageBox.Show("E-mail sent!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.Hide();
         }
     }
 }
