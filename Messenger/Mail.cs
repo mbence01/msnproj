@@ -129,7 +129,6 @@ namespace Messenger
                         {
                             int senderID;
                             int addresseeID;
-                            int? parentMail;
 
                             this.mailSubject = reader.GetValue(reader.GetOrdinal("MailSubject")).ToString();
                             this.mailBody = reader.GetValue(reader.GetOrdinal("MailBody")).ToString();
@@ -137,20 +136,22 @@ namespace Messenger
 
                             senderID = (int)reader.GetValue(reader.GetOrdinal("SenderID"));
                             addresseeID = (int)reader.GetValue(reader.GetOrdinal("AddresseeID"));
-                            parentMail = (int)reader.GetValue(reader.GetOrdinal("ParentMail"));
+
+                            object parent = reader.GetValue(reader.GetOrdinal("ParentMail"));
+
+                            if (parent == System.DBNull.Value)
+                                this.parentMail = null;
+                            else
+                                this.parentMail = new Mail((int)parent);
 
                             this.sender = new User(senderID);
                             this.addressee = new User(addresseeID);
-
-                            if(parentMail.HasValue)
-                            {
-                                this.parentMail = new Mail(parentMail.Value);
-                            }
                         }
                     }
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine(e.StackTrace);
                     Console.WriteLine(
                         System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
                         System.Reflection.MethodBase.GetCurrentMethod().Name +
@@ -240,7 +241,7 @@ namespace Messenger
 
         public static Mail AddNew(int senderID, int addresseeID, string mailSubject, string mailBody, int? parentMail)
         {
-            string sqlCmd = "INSERT INTO Mails(SenderID, AddresseeID, MailSubject, MailBody, ParentMail) VALUES(@senderid, @addresseeid, @subject, @body, @parent)";
+            string sqlCmd = "add_new_mail";
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -254,19 +255,23 @@ namespace Messenger
                     cmd.Parameters.Add(new SqlParameter("@addresseeid", addresseeID));
                     cmd.Parameters.Add(new SqlParameter("@body", mailBody));
 
+
                     if(mailSubject == null || mailSubject.Length == 0)
-                        cmd.Parameters.Add(new SqlParameter("@subject", null));
+                        cmd.Parameters.Add(new SqlParameter("@subject", DBNull.Value));
                     else
                         cmd.Parameters.Add(new SqlParameter("@subject", mailSubject));
 
                     if (parentMail.HasValue)
                         cmd.Parameters.Add(new SqlParameter("@parent", parentMail));
                     else
-                        cmd.Parameters.Add(new SqlParameter("@parent", null));
+                        cmd.Parameters.Add(new SqlParameter("@parent", DBNull.Value));
 
-                    int insertedId = (int)cmd.ExecuteScalar();
+                    var returnParam = cmd.Parameters.Add("@ReturnVal", System.Data.SqlDbType.Int);
+                    returnParam.Direction = System.Data.ParameterDirection.ReturnValue;
 
-                    return new Mail(insertedId);
+                    cmd.ExecuteNonQuery();
+
+                    return new Mail((int)returnParam.Value);
                 }
                 catch (Exception e)
                 {
@@ -285,13 +290,13 @@ namespace Messenger
             string sqlCmd;
 
             if (senderid.HasValue && !addresseeid.HasValue)
-                sqlCmd = "SELECT * FROM Mails WHERE SenderID = @senderid";
+                sqlCmd = "SELECT * FROM Mails WHERE SenderID = @senderid ORDER BY ID DESC";
             else if(!senderid.HasValue && addresseeid.HasValue)
-                sqlCmd = "SELECT * FROM Mails WHERE AddresseeID = @addresseeid";
+                sqlCmd = "SELECT * FROM Mails WHERE AddresseeID = @addresseeid ORDER BY ID DESC";
             else if(senderid.HasValue && addresseeid.HasValue)
-                sqlCmd = "SELECT * FROM Mails WHERE SenderID = @senderid AND AddresseeID = @addresseeid";
+                sqlCmd = "SELECT * FROM Mails WHERE SenderID = @senderid AND AddresseeID = @addresseeid ORDER BY ID DESC";
             else
-                sqlCmd = "SELECT * FROM Mails";
+                sqlCmd = "SELECT * FROM Mails ORDER BY ID DESC";
 
 
             using (SqlConnection conn = new SqlConnection(connStr))
