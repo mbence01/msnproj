@@ -218,11 +218,25 @@ namespace Messenger
                         DbType = System.Data.DbType.String,
                         Size = 8000
                     };
-                    SqlParameter parentmailParam = new SqlParameter("@parentMail", this.parentMail.Id)
+
+                    SqlParameter parentmailParam;
+
+                    if(this.parentMail == null)
                     {
-                        DbType = System.Data.DbType.Int32,
-                        Size = 11
-                    };
+                        parentmailParam = new SqlParameter("@parentMail", DBNull.Value)
+                        {
+                            DbType = System.Data.DbType.Int32,
+                            Size = 11
+                        };
+                    } else
+                    {
+                        parentmailParam = new SqlParameter("@parentMail", this.parentMail.Id)
+                        {
+                            DbType = System.Data.DbType.Int32,
+                            Size = 11
+                        };
+                    }
+                    
                     SqlParameter readParam = new SqlParameter("@read", this.read)
                     {
                         DbType = System.Data.DbType.Int32,
