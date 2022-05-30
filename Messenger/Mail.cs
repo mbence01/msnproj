@@ -333,7 +333,7 @@ namespace Messenger
                         Size = 11
                     };
 
-                    SqlParameter addresseParam = new SqlParameter("@addresseid", addresseeid)
+                    SqlParameter addresseeParam = new SqlParameter("@addresseeid", addresseeid)
                     {
                         DbType = System.Data.DbType.Int32,
                         Size = 11
@@ -342,7 +342,7 @@ namespace Messenger
                     if (senderid.HasValue)
                         cmd.Parameters.Add(senderParam);
                     if (addresseeid.HasValue)
-                        cmd.Parameters.Add(addresseeid);
+                        cmd.Parameters.Add(addresseeParam);
 
 
                     cmd.Prepare();
