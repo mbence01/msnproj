@@ -17,6 +17,7 @@ namespace Messenger
         private string mailSubject;
         private string mailBody;
         private Mail parentMail;
+        private int read;
         private DateTime mailDate;
 
         public Mail(int id)
@@ -90,6 +91,18 @@ namespace Messenger
             }
         }
 
+        public int Read
+        {
+            get
+            {
+                return read;
+            }
+            set
+            {
+                read = value;
+            }
+        }
+
         public DateTime MailDate
         {
             get
@@ -133,6 +146,7 @@ namespace Messenger
                             this.mailSubject = reader.GetValue(reader.GetOrdinal("MailSubject")).ToString();
                             this.mailBody = reader.GetValue(reader.GetOrdinal("MailBody")).ToString();
                             this.mailDate = DateTime.Parse(reader.GetValue(reader.GetOrdinal("MailDate")).ToString());
+                            this.read = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("MailReadStatus")));
 
                             senderID = (int)reader.GetValue(reader.GetOrdinal("SenderID"));
                             addresseeID = (int)reader.GetValue(reader.GetOrdinal("AddresseeID"));
@@ -169,7 +183,7 @@ namespace Messenger
 
             StringBuilder sb = new StringBuilder();
 
-            string sqlCmd = "UPDATE Mails SET SenderID = @senderID, AddresseeID = @addresseeID, MailSubject = @mailSubject, MailBody = @mailBody, ParentMail = @parentMail WHERE ID = @mailID";
+            string sqlCmd = "UPDATE Mails SET SenderID = @senderID, AddresseeID = @addresseeID, MailSubject = @mailSubject, MailBody = @mailBody, ParentMail = @parentMail, MailReadStatus = @read WHERE ID = @mailID";
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -207,6 +221,11 @@ namespace Messenger
                         DbType = System.Data.DbType.Int32,
                         Size = 11
                     };
+                    SqlParameter readParam = new SqlParameter("@read", this.read)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
                     SqlParameter mailidParam = new SqlParameter("@mailID", this.id)
                     {
                         DbType = System.Data.DbType.Int32,
@@ -218,6 +237,7 @@ namespace Messenger
                     cmd.Parameters.Add(subjectParam);
                     cmd.Parameters.Add(bodyParam);
                     cmd.Parameters.Add(parentmailParam);
+                    cmd.Parameters.Add(readParam);
                     cmd.Parameters.Add(mailidParam);
 
                     cmd.Prepare();
