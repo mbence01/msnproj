@@ -18,6 +18,26 @@ namespace Messenger
             this.FormClosing += Main_Closing;
         }
 
+        private void UpdateFriendList()
+        {
+            List<User> friendList = UserSession.LoggedInUser.GetFriends();
+
+            if (friendList == null)
+                return;
+
+            foreach (User friend in friendList)
+            {
+                StringBuilder sb = new StringBuilder();
+
+                sb.Append(friend.Username);
+                sb.Append(" (");
+                sb.Append((friend.Status == 1) ? "Online" : "Offline");
+                sb.Append(")");
+
+                friendsContainer.Items.Add(sb.ToString());
+            }
+        }
+
         private void UpdateList()
         {
             mailList.Items.Clear();
@@ -59,6 +79,7 @@ namespace Messenger
                 Program.ChangeForm(this, new LoginForm());
             }
             UpdateList();
+            UpdateFriendList();
         }
 
         private void logOutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -126,6 +147,49 @@ namespace Messenger
         private void myMailsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Program.ChangeForm(this, Program.mailListForm, false);
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void addFriendBtn_Click(object sender, EventArgs e)
+        {
+            PromptWindow prompt = new PromptWindow();
+
+            prompt.btnClickEvent = HandlePromptClickEvent;
+            prompt.Show();
+        }
+
+        private void HandlePromptClickEvent(object sender, EventArgs e)
+        {
+            PromptWindow window = (PromptWindow)sender;
+
+            string input = window.INPUT;
+
+            if (input == null || input.Length == 0)
+                return;
+
+
+            bool addFriendReqResult = false;
+            List<User> userWithUsername = User.FindBy(input);
+
+            if(userWithUsername == null || userWithUsername.Count == 0)
+            {
+                int id = User.IsEmailAddrExists(input);
+
+                if(id != 0)
+                    addFriendReqResult = UserSession.LoggedInUser.AddFriendRequest(id);
+            } else
+            {
+                addFriendReqResult = UserSession.LoggedInUser.AddFriendRequest(userWithUsername[0].Id);
+            }
+
+            if (addFriendReqResult)
+                MessageBox.Show("Your request has been sent to " + input, "Request sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else
+                MessageBox.Show("An error has occurred when trying to save your request. Maybe you are already friends or a request has already been sent.", "Request failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

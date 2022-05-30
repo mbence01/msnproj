@@ -58,6 +58,16 @@ namespace Messenger
 
             DialogResult res = MessageBox.Show("Are you sure you want to delete this e-mail?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
+            if(res.ToString().Equals("Yes"))
+            {
+                if(currMail.Delete())
+                    MessageBox.Show("E-mail has successfully been deleted.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                    MessageBox.Show("An error has occurred when trying to delete your e-mail, try again later.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                this.Hide();
+            }
+
             Console.WriteLine(res.ToString());
         }
 

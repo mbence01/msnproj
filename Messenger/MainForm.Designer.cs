@@ -41,7 +41,9 @@
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.label1 = new System.Windows.Forms.Label();
+            this.friendsContainer = new System.Windows.Forms.ListBox();
+            this.addFriendBtn = new System.Windows.Forms.Button();
+            this.removeFriendBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -110,12 +112,12 @@
             this.columnHeader2,
             this.columnHeader3,
             this.columnHeader4});
-            this.mailList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mailList.Dock = System.Windows.Forms.DockStyle.Right;
             this.mailList.FullRowSelect = true;
             this.mailList.HideSelection = false;
-            this.mailList.Location = new System.Drawing.Point(0, 24);
+            this.mailList.Location = new System.Drawing.Point(198, 24);
             this.mailList.Name = "mailList";
-            this.mailList.Size = new System.Drawing.Size(800, 426);
+            this.mailList.Size = new System.Drawing.Size(602, 426);
             this.mailList.TabIndex = 1;
             this.mailList.UseCompatibleStateImageBehavior = false;
             this.mailList.View = System.Windows.Forms.View.Details;
@@ -146,22 +148,42 @@
             this.columnHeader4.Text = "Date";
             this.columnHeader4.Width = 643;
             // 
-            // label1
+            // friendsContainer
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(130, 191);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(506, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "TODO: Olvasott, olvasatlan e-mailek + table row onclick -> email megnyitás, válas" +
-    "z lehetőség, e-mail törlés";
+            this.friendsContainer.FormattingEnabled = true;
+            this.friendsContainer.Location = new System.Drawing.Point(12, 24);
+            this.friendsContainer.Name = "friendsContainer";
+            this.friendsContainer.Size = new System.Drawing.Size(172, 303);
+            this.friendsContainer.TabIndex = 2;
+            this.friendsContainer.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            // 
+            // addFriendBtn
+            // 
+            this.addFriendBtn.Location = new System.Drawing.Point(23, 348);
+            this.addFriendBtn.Name = "addFriendBtn";
+            this.addFriendBtn.Size = new System.Drawing.Size(152, 35);
+            this.addFriendBtn.TabIndex = 3;
+            this.addFriendBtn.Text = "Add friend";
+            this.addFriendBtn.UseVisualStyleBackColor = true;
+            this.addFriendBtn.Click += new System.EventHandler(this.addFriendBtn_Click);
+            // 
+            // removeFriendBtn
+            // 
+            this.removeFriendBtn.Location = new System.Drawing.Point(23, 401);
+            this.removeFriendBtn.Name = "removeFriendBtn";
+            this.removeFriendBtn.Size = new System.Drawing.Size(152, 37);
+            this.removeFriendBtn.TabIndex = 4;
+            this.removeFriendBtn.Text = "Remove selected";
+            this.removeFriendBtn.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.removeFriendBtn);
+            this.Controls.Add(this.addFriendBtn);
+            this.Controls.Add(this.friendsContainer);
             this.Controls.Add(this.mailList);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -189,7 +211,9 @@
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ToolStripMenuItem refreshMailsToolStripMenuItem;
+        private System.Windows.Forms.ListBox friendsContainer;
+        private System.Windows.Forms.Button addFriendBtn;
+        private System.Windows.Forms.Button removeFriendBtn;
     }
 }
