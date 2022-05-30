@@ -86,7 +86,27 @@ namespace Messenger
         {
             int mailId = 0;
 
-            Console.WriteLine(mailList.SelectedItems[0].Text);
+            try
+            {
+                mailId = Convert.ToInt32(mailList.SelectedItems[0].Text);
+            }
+            catch(Exception ex) when (ex is FormatException || ex is OverflowException)
+            {
+                MessageBox.Show("Fatal error when trying to convert the ID of selected e-mail, try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            if (mailId == 0)
+                return;
+
+            Mail mail = new Mail(mailId);
+
+            if((int)mail.MAILDATA_SET_MESSAGE[0] == -1)
+            {
+                MessageBox.Show("Fatal error when trying to read e-mail, try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            UserSession.SessionVars["CurrentMail"] = mail;
         }
 
         private void refreshMailsToolStripMenuItem_Click(object sender, EventArgs e)
