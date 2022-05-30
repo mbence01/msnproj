@@ -13,6 +13,7 @@ namespace Messenger
         public static Form mainForm;
         public static Form newMailForm;
         public static Form mailListForm;
+        public static Form viewMailForm;
 
         /// <summary>
         /// The main entry point for the application.
@@ -33,6 +34,7 @@ namespace Messenger
             mainForm = new MainForm();
             newMailForm = new NewMailForm();
             mailListForm = new MailListForm();
+            viewMailForm = new ViewMailForm();
         }
 
         public static void ChangeForm(Form from, Form to, bool hidePrevious = true)
