@@ -31,6 +31,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.newMailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.myMailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.refreshMailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.myProfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logOutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,7 +42,6 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label1 = new System.Windows.Forms.Label();
-            this.refreshMailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,6 +72,14 @@
             this.myMailsToolStripMenuItem.Name = "myMailsToolStripMenuItem";
             this.myMailsToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.myMailsToolStripMenuItem.Text = "Sent mails";
+            this.myMailsToolStripMenuItem.Click += new System.EventHandler(this.myMailsToolStripMenuItem_Click);
+            // 
+            // refreshMailsToolStripMenuItem
+            // 
+            this.refreshMailsToolStripMenuItem.Name = "refreshMailsToolStripMenuItem";
+            this.refreshMailsToolStripMenuItem.Size = new System.Drawing.Size(89, 20);
+            this.refreshMailsToolStripMenuItem.Text = "Refresh mails";
+            this.refreshMailsToolStripMenuItem.Click += new System.EventHandler(this.refreshMailsToolStripMenuItem_Click);
             // 
             // myProfileToolStripMenuItem
             // 
@@ -147,13 +155,6 @@
             this.label1.TabIndex = 2;
             this.label1.Text = "TODO: Olvasott, olvasatlan e-mailek + table row onclick -> email megnyitás, válas" +
     "z lehetőség, e-mail törlés";
-            // 
-            // refreshMailsToolStripMenuItem
-            // 
-            this.refreshMailsToolStripMenuItem.Name = "refreshMailsToolStripMenuItem";
-            this.refreshMailsToolStripMenuItem.Size = new System.Drawing.Size(89, 20);
-            this.refreshMailsToolStripMenuItem.Text = "Refresh mails";
-            this.refreshMailsToolStripMenuItem.Click += new System.EventHandler(this.refreshMailsToolStripMenuItem_Click);
             // 
             // MainForm
             // 

@@ -13,3 +13,4 @@ C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.RegForm.reso
 C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.MainForm.resources
 C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.NewMailForm.resources
 C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.MailListForm.resources
+C:\Users\Admin\source\repos\Messenger\Messenger\obj\Debug\Messenger.ViewMailForm.resources

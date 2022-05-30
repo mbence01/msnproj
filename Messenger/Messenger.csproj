@@ -81,6 +81,12 @@
     </Compile>
     <Compile Include="User.cs" />
     <Compile Include="UserSession.cs" />
+    <Compile Include="ViewMailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ViewMailForm.Designer.cs">
+      <DependentUpon>ViewMailForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -104,6 +110,9 @@
     </Compile>
     <EmbeddedResource Include="RegForm.resx">
       <DependentUpon>RegForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewMailForm.resx">
+      <DependentUpon>ViewMailForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
