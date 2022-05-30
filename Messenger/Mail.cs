@@ -20,11 +20,13 @@ namespace Messenger
         private int read;
         private DateTime mailDate;
 
+        public List<object> MAILDATA_SET_MESSAGE;
+
         public Mail(int id)
         {
             this.id = id;
 
-            SetMailData();
+            MAILDATA_SET_MESSAGE = SetMailData();
         }
 
         public int Id
