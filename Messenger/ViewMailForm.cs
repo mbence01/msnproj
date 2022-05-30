@@ -60,5 +60,11 @@ namespace Messenger
 
             Console.WriteLine(res.ToString());
         }
+
+        private void replyBtn_Click(object sender, EventArgs e)
+        {
+            UserSession.SessionVars["MailReply"] = currMail;
+            Program.ChangeForm(this, Program.newMailForm, false);
+        }
     }
 }

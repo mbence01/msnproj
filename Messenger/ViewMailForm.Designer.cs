@@ -65,6 +65,7 @@
             this.replyBtn.TabIndex = 2;
             this.replyBtn.Text = "Reply";
             this.replyBtn.UseVisualStyleBackColor = true;
+            this.replyBtn.Click += new System.EventHandler(this.replyBtn_Click);
             // 
             // deleteBtn
             // 

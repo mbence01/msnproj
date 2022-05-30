@@ -80,7 +80,7 @@ namespace Messenger
 
         private void newMailToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UserSession.SessionVars["MailReply"] = 0;
+            UserSession.SessionVars.Remove("MailReply");
             Program.ChangeForm(this, Program.newMailForm, false);
         }
 

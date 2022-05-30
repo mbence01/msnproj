@@ -12,19 +12,43 @@ namespace Messenger
 {
     public partial class NewMailForm : Form
     {
+        private int? parentMailId;
+
         public NewMailForm()
         {
             InitializeComponent();
-            this.FormClosing += NewMailForm_Close;
+            this.FormClosing += NewMailForm_FormClosing;
         }
 
-        private void NewMailForm_Close(object sender, System.ComponentModel.CancelEventArgs e)
+        private void NewMailForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Console.WriteLine("asd");
             Program.newMailForm = new NewMailForm();
         }
 
         private void NewMailForm_Load(object sender, EventArgs e)
         {
+            object reply;
+            Mail parentMail = null;
+
+            if(UserSession.SessionVars.TryGetValue("MailReply", out reply))
+            {
+                parentMail = (Mail)reply;
+                parentMailId = parentMail.Id;
+            } else
+            {
+                parentMailId = null;
+            }
+
+            if(parentMailId.HasValue)
+            {
+                textSubject.Text = "Re: " + parentMail.MailSubject;
+                textSubject.Enabled = false;
+
+                textTo.Text = parentMail.Sender.Email;
+                textTo.Enabled = false;
+            }
+
             textFrom.Text = UserSession.LoggedInUser.Email;
         }
 
@@ -34,15 +58,6 @@ namespace Messenger
             string toText = textTo.Text;
             string subjectText = textSubject.Text;
             string bodyText = textBody.Text;
-            object reply;
-            int? parentMail;
-            
-            UserSession.SessionVars.TryGetValue("MailReply", out reply);
-
-            if ((int)reply == 0)
-                parentMail = null;
-            else
-                parentMail = (int)reply;
 
             if(fromText == null || fromText.Length == 0 || toText == null || toText.Length == 0)
             {
@@ -71,7 +86,7 @@ namespace Messenger
                 return;
             }
 
-            Mail newMail = Mail.AddNew(UserSession.LoggedInUser.Id, userIDWithGivenEmail, subjectText, bodyText, parentMail);
+            Mail newMail = Mail.AddNew(UserSession.LoggedInUser.Id, userIDWithGivenEmail, subjectText, bodyText, parentMailId);
 
             if(newMail == null)
             {
