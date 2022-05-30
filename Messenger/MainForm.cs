@@ -20,7 +20,7 @@ namespace Messenger
 
         private void UpdateList()
         {
-            List<Mail> mails = Mail.FindBy(UserSession.LoggedInUser.Id);
+            List<Mail> mails = Mail.FindBy(null, UserSession.LoggedInUser.Id);
 
             foreach (Mail mail in mails)
             {
@@ -30,6 +30,14 @@ namespace Messenger
                 mailItem.SubItems.Add(mail.MailSubject);
                 mailItem.SubItems.Add(mail.MailBody.Substring(0, Math.Min(30, mail.MailBody.Length)) + "...");
                 mailItem.SubItems.Add(mail.MailDate.ToString());
+
+                if(mail.Read == 0)
+                {
+                    foreach(ListViewItem.ListViewSubItem subItem in mailItem.SubItems)
+                    {
+                        subItem.Font = new Font(subItem.Font, FontStyle.Bold);
+                    }
+                }
 
                 mailList.Items.Add(mailItem);
             }
@@ -49,11 +57,6 @@ namespace Messenger
                 Program.ChangeForm(this, new LoginForm());
             }
             UpdateList();
-        }
-
-        private void homeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void logOutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -79,9 +82,17 @@ namespace Messenger
             Program.ChangeForm(this, Program.newMailForm, false);
         }
 
-        private void myMailsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void mailList_DoubleClick(object sender, EventArgs e)
         {
-            Program.ChangeForm(this, Program.mailListForm, false);
+            int mailId = 0;
+
+            Console.WriteLine(mailList.SelectedItems[0].Text);
+        }
+
+        private void refreshMailsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            mailList.Items.Clear();
+            UpdateList();
         }
     }
 }

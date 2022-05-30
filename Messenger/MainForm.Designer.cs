@@ -41,6 +41,7 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label1 = new System.Windows.Forms.Label();
+            this.refreshMailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,6 +50,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newMailToolStripMenuItem,
             this.myMailsToolStripMenuItem,
+            this.refreshMailsToolStripMenuItem,
             this.myProfileToolStripMenuItem,
             this.logOutToolStripMenuItem,
             this.exitToolStripMenuItem});
@@ -70,7 +72,6 @@
             this.myMailsToolStripMenuItem.Name = "myMailsToolStripMenuItem";
             this.myMailsToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.myMailsToolStripMenuItem.Text = "Sent mails";
-            this.myMailsToolStripMenuItem.Click += new System.EventHandler(this.myMailsToolStripMenuItem_Click);
             // 
             // myProfileToolStripMenuItem
             // 
@@ -102,6 +103,7 @@
             this.columnHeader3,
             this.columnHeader4});
             this.mailList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mailList.FullRowSelect = true;
             this.mailList.HideSelection = false;
             this.mailList.Location = new System.Drawing.Point(0, 24);
             this.mailList.Name = "mailList";
@@ -109,6 +111,7 @@
             this.mailList.TabIndex = 1;
             this.mailList.UseCompatibleStateImageBehavior = false;
             this.mailList.View = System.Windows.Forms.View.Details;
+            this.mailList.DoubleClick += new System.EventHandler(this.mailList_DoubleClick);
             // 
             // columnHeader0
             // 
@@ -145,6 +148,13 @@
             this.label1.Text = "TODO: Olvasott, olvasatlan e-mailek + table row onclick -> email megnyitás, válas" +
     "z lehetőség, e-mail törlés";
             // 
+            // refreshMailsToolStripMenuItem
+            // 
+            this.refreshMailsToolStripMenuItem.Name = "refreshMailsToolStripMenuItem";
+            this.refreshMailsToolStripMenuItem.Size = new System.Drawing.Size(89, 20);
+            this.refreshMailsToolStripMenuItem.Text = "Refresh mails";
+            this.refreshMailsToolStripMenuItem.Click += new System.EventHandler(this.refreshMailsToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -179,5 +189,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ToolStripMenuItem refreshMailsToolStripMenuItem;
     }
 }
