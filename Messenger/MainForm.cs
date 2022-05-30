@@ -20,6 +20,8 @@ namespace Messenger
 
         private void UpdateList()
         {
+            mailList.Items.Clear();
+
             List<Mail> mails = Mail.FindBy(null, UserSession.LoggedInUser.Id);
 
             foreach (Mail mail in mails)
@@ -106,13 +108,24 @@ namespace Messenger
                 return;
             }
 
+            mail.Read = 1;
+            mail.Update();
+
             UserSession.SessionVars["CurrentMail"] = mail;
+
+            UpdateList();
+
+            Program.ChangeForm(this, Program.viewMailForm, false);
         }
 
         private void refreshMailsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            mailList.Items.Clear();
             UpdateList();
+        }
+
+        private void myMailsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.ChangeForm(this, Program.mailListForm, false);
         }
     }
 }
