@@ -20,6 +20,7 @@ namespace Messenger
         private string password;
         private string email;
         private DateTime regDate;
+        private int status;
 
         public List<object> USERDATA_SET_MESSAGE;
 
@@ -78,6 +79,18 @@ namespace Messenger
             }    
         }
 
+        public int Status
+        {
+            get
+            {
+                return status;
+            }
+            set
+            {
+                status = value;
+            }
+        }
+
         private List<object> SetUserData()
         {
             if (id == 0)
@@ -111,6 +124,7 @@ namespace Messenger
                             this.password = reader.GetValue(reader.GetOrdinal("UserPassword")).ToString();
                             this.email    = reader.GetValue(reader.GetOrdinal("EmailAddr")).ToString();
                             this.regDate  = DateTime.Parse(reader.GetValue(reader.GetOrdinal("RegisterDate")).ToString());
+                            this.status   = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("UserStatus")));
                         }
                     }
                 } catch(Exception e)
@@ -131,7 +145,7 @@ namespace Messenger
             if (id == 0)
                 return new List<object>() { -1, "ID of User instance is not set. Set the ID and try again." };
 
-            string sqlCmd = "UPDATE Users SET Users.Username = @username, Users.EmailAddr = @email, UserPasswords.PasswordHash = @hash FROM Users INNER JOIN UserPasswords ON Users.ID = UserPasswords.UserID WHERE Users.ID = @userid";
+            string sqlCmd = "UPDATE Users SET Users.Username = @username, Users.EmailAddr = @email, UserStatus = @userstatus, UserPasswords.PasswordHash = @hash FROM Users INNER JOIN UserPasswords ON Users.ID = UserPasswords.UserID WHERE Users.ID = @userid";
             
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -165,10 +179,17 @@ namespace Messenger
                         Size = 64
                     };
 
+                    SqlParameter statusParam = new SqlParameter("@userstatus", this.status)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
                     cmd.Parameters.Add(useridParam);
                     cmd.Parameters.Add(usernameParam);
                     cmd.Parameters.Add(emailParam);
                     cmd.Parameters.Add(pwdhashParam);
+                    cmd.Parameters.Add(statusParam);
 
                     cmd.Prepare();
 
@@ -283,6 +304,104 @@ namespace Messenger
                 }
             }
             return retArr;
+        }
+
+        public List<User> GetFriends()
+        {
+            List<User> retArr = new List<User>();
+            string sqlCmd = "SELECT * FROM Friends WHERE User1 = @userid OR User2 = @userid";
+
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(sqlCmd, conn);
+
+                    SqlParameter idParam = new SqlParameter("@userid", this.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    cmd.Parameters.Add(idParam);
+
+                    cmd.Prepare();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int user1 = (int)reader.GetValue(reader.GetOrdinal("User1"));
+                            int user2 = (int)reader.GetValue(reader.GetOrdinal("User2"));
+
+                            if (user1 == this.Id)
+                                retArr.Add(new User(user2));
+                            else
+                                retArr.Add(new User(user1));
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(
+                        System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
+                        System.Reflection.MethodBase.GetCurrentMethod().Name +
+                        " -> " + e.Message);
+                    return null;
+                }
+            }
+            return retArr;
+        }
+
+        public bool AddFriendRequest(int userId)
+        {
+            using(SqlConnection conn = new SqlConnection(connStr))
+            {
+                try 
+                {
+                    conn.Open();
+
+                    string sqlCmd = "new_friend_req";
+
+                    SqlCommand cmd = new SqlCommand(sqlCmd, conn)
+                    {
+                        CommandType = System.Data.CommandType.StoredProcedure
+                    };
+
+                    SqlParameter user1Param = new SqlParameter("@user1", this.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    SqlParameter user2Param = new SqlParameter("@user2", userId)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    cmd.Parameters.Add(user1Param);
+                    cmd.Parameters.Add(user2Param);
+
+                    var returnParam = cmd.Parameters.Add("@ReturnVal", System.Data.SqlDbType.Int);
+                    returnParam.Direction = System.Data.ParameterDirection.ReturnValue;
+
+                    cmd.ExecuteNonQuery();
+
+                    return ((int)returnParam.Value) != -1;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(
+                        System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
+                        System.Reflection.MethodBase.GetCurrentMethod().Name +
+                        " -> " + e.Message);
+                    return false;
+                }
+            }
         }
 
         public static int IsEmailAddrExists(string email)

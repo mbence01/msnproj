@@ -385,5 +385,31 @@ namespace Messenger
             }
             return retArr;
         }
+
+        public bool Delete()
+        {
+            using(SqlConnection conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+
+                string sqlCmd = "delete_mail";
+
+                SqlCommand cmd = new SqlCommand(sqlCmd, conn) { CommandType = System.Data.CommandType.StoredProcedure };
+
+                SqlParameter idParam = new SqlParameter("@currentid", this.Id)
+                {
+                    DbType = System.Data.DbType.Int32,
+                    Size = 11
+                };
+
+                cmd.Parameters.Add(idParam);
+
+                idParam.ParameterName = "@startid";
+                cmd.Parameters.Add(idParam);
+                
+                int rowsAffected = cmd.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
+        }
     }
 }
