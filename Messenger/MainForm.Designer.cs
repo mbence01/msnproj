@@ -89,6 +89,7 @@
             this.myProfileToolStripMenuItem.Name = "myProfileToolStripMenuItem";
             this.myProfileToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.myProfileToolStripMenuItem.Text = "My profile";
+            this.myProfileToolStripMenuItem.Click += new System.EventHandler(this.myProfileToolStripMenuItem_Click);
             // 
             // logOutToolStripMenuItem
             // 
