@@ -72,6 +72,12 @@
     <Compile Include="NewMailForm.Designer.cs">
       <DependentUpon>NewMailForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProfileForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProfileForm.Designer.cs">
+      <DependentUpon>ProfileForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="PromptWindow.cs">
       <SubType>Form</SubType>
@@ -105,6 +111,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="NewMailForm.resx">
       <DependentUpon>NewMailForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfileForm.resx">
+      <DependentUpon>ProfileForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PromptWindow.resx">
       <DependentUpon>PromptWindow.cs</DependentUpon>
