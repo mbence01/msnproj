@@ -577,8 +577,229 @@ namespace Messenger
                 }
             }
         }
+        public List<string> GetFriendRequestHistory(int type) // 0: who, 1: whom
+        {
+            List<string> retArr = new List<string>();
 
-        private static string CreateHashedPassword(string password)
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+
+                    string sqlCmd = "";
+
+                    if(type == 0)
+                        sqlCmd = "SELECT * FROM FriendRequests WHERE User1 = @userid ORDER BY ID DESC";
+                    else
+                        sqlCmd = "SELECT * FROM FriendRequests WHERE User2 = @userid ORDER BY ID DESC";
+
+                    SqlCommand cmd = new SqlCommand(sqlCmd, conn);
+
+                    SqlParameter param = new SqlParameter("@userid", this.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    cmd.Parameters.Add(param);
+                    cmd.Prepare();
+
+                    StringBuilder sb = new StringBuilder();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = (int)reader.GetValue(reader.GetOrdinal("ID"));
+                            int user1 = (int)reader.GetValue(reader.GetOrdinal("User1"));
+                            int user2 = (int)reader.GetValue(reader.GetOrdinal("User2"));
+                            string reqDate = reader.GetValue(reader.GetOrdinal("RequestDate")).ToString();
+
+                            User userObj1 = new User(user1);
+                            User userObj2 = new User(user2);
+
+                            sb.Clear();
+
+                            if (type == 0)
+                                sb.Append("You");
+                            else
+                                sb.Append(userObj1.Username);
+
+
+                            sb.Append(" sent a friend request to ");
+                            
+
+                            if (type == 0)
+                                sb.Append(userObj2.Username);
+                            else
+                                sb.Append("you");
+
+                            sb.Append(" at ");
+                            sb.Append(reqDate);
+
+
+                            retArr.Add(sb.ToString());
+                        }
+                        return retArr;
+                    }
+                }
+                catch (Exception e) when (e is SqlException || e is InvalidOperationException)
+                {
+                    Console.WriteLine(
+                        System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
+                        System.Reflection.MethodBase.GetCurrentMethod().Name +
+                        " -> " + e.Message);
+                    return null;
+                }
+            }
+        }
+
+        public List<string> GetPasswordHistory()
+        {
+            List<string> retArr = new List<string>();
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+
+                    string sqlCmd = "SELECT CreatedAt FROM UserPasswords WHERE UserID = @userid ORDER BY ID DESC";
+
+                    SqlCommand cmd = new SqlCommand(sqlCmd, conn);
+
+                    SqlParameter param = new SqlParameter("@userid", this.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    cmd.Parameters.Add(param);
+                    cmd.Prepare();
+
+                    StringBuilder sb = new StringBuilder();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string date = reader.GetValue(reader.GetOrdinal("CreatedAt")).ToString();
+
+                            sb.Clear();
+
+                            sb.Append("You changed your password at ");
+                            sb.Append(date);
+
+                            retArr.Add(sb.ToString());
+                        }
+                        return retArr;
+                    }
+                }
+                catch (Exception e) when (e is SqlException || e is InvalidOperationException)
+                {
+                    Console.WriteLine(
+                        System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
+                        System.Reflection.MethodBase.GetCurrentMethod().Name +
+                        " -> " + e.Message);
+                    return null;
+                }
+            }
+        }
+
+        public List<string> GetUserLogins()
+        {
+            List<string> retArr = new List<string>();
+
+            using(SqlConnection conn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+
+                    string sqlCmd = "SELECT * FROM UserLogins WHERE UserID = @userid ORDER BY ID DESC";
+
+                    SqlCommand cmd = new SqlCommand(sqlCmd, conn);
+
+                    SqlParameter param = new SqlParameter("@userid", this.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    cmd.Parameters.Add(param);
+                    cmd.Prepare();
+
+                    StringBuilder sb = new StringBuilder();
+                    
+                    using(SqlDataReader reader = cmd.ExecuteReader()) 
+                    {
+                        while(reader.Read())
+                        {
+                            int type = (int)reader.GetValue(reader.GetOrdinal("LoginType"));
+                            string date = reader.GetValue(reader.GetOrdinal("LoginDate")).ToString();
+
+                            sb.Clear();
+
+                            sb.Append(this.Username);
+
+                            if (type == 0)
+                                sb.Append(" logged in at ");
+                            else
+                                sb.Append(" logged out at ");
+
+                            sb.Append(date);
+
+                            retArr.Add(sb.ToString());
+                        }
+                        return retArr;
+                    }
+                }
+                catch(Exception e) when(e is SqlException || e is InvalidOperationException)
+                {
+                    Console.WriteLine(
+                        System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
+                        System.Reflection.MethodBase.GetCurrentMethod().Name +
+                        " -> " + e.Message);
+                    return null;
+                }
+            }
+        }
+
+        public void Delete()
+        {
+            using(SqlConnection conn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+
+                    string sqlCmd = "DELETE FROM Users WHERE ID = @id";
+
+                    SqlCommand cmd = new SqlCommand(sqlCmd, conn);
+
+                    SqlParameter idParam = new SqlParameter("@id", this.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    cmd.Parameters.Add(idParam);
+                    cmd.Prepare();
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch(Exception e) when(e is SqlException || e is InvalidOperationException)
+                {
+                    Console.WriteLine(
+                        System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
+                        System.Reflection.MethodBase.GetCurrentMethod().Name +
+                        " -> " + e.Message);
+                }
+            }
+        }
+
+        public static string CreateHashedPassword(string password)
         {
             using(MD5 md5 = MD5.Create())
             {
