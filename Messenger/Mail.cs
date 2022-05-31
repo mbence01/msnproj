@@ -183,6 +183,7 @@ namespace Messenger
             if (id == 0)
                 return new List<object>() { -1, "ID of Mail instance is not set. Set the ID and try again." };
 
+
             StringBuilder sb = new StringBuilder();
 
             string sqlCmd = "UPDATE Mails SET SenderID = @senderID, AddresseeID = @addresseeID, MailSubject = @mailSubject, MailBody = @mailBody, ParentMail = @parentMail, MailReadStatus = @read WHERE ID = @mailID";
