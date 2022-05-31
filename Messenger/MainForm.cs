@@ -130,10 +130,10 @@ namespace Messenger
             int width = mailList.Width;
 
             mailList.Columns[0].Width = (int)(width * 0.05);
-            mailList.Columns[1].Width = (int)(width * 0.275);
+            mailList.Columns[1].Width = (int)(width * 0.2);
             mailList.Columns[2].Width = (int)(width * 0.2);
             mailList.Columns[3].Width = (int)(width * 0.275);
-            mailList.Columns[4].Width = (int)(width * 0.2);
+            mailList.Columns[4].Width = (int)(width * 0.275);
         }
 
         private void logOutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -203,11 +203,6 @@ namespace Messenger
             Program.ChangeForm(this, Program.mailListForm, false);
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void addFriendBtn_Click(object sender, EventArgs e)
         {
             PromptWindow prompt = new PromptWindow();
@@ -255,7 +250,8 @@ namespace Messenger
                 MessageBox.Show("Your request has been sent to " + input, "Request sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
                 MessageBox.Show("An error has occurred when trying to save your request. Maybe you are already friends or a request has already been sent.", "Request failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            
+
+            RefreshContent();
             window.Hide();
         }
 
@@ -289,6 +285,36 @@ namespace Messenger
                 }
                 RefreshContent();
             }
+        }
+
+        private void removeFriendBtn_Click(object sender, EventArgs e)
+        {
+            int selected = friendsContainer.SelectedIndex;
+
+            if(selected == -1)
+            {
+                MessageBox.Show("First you need to select a friend.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (UserSession.LoggedInUser.RemoveFriend(friends[selected]))
+                MessageBox.Show("Friend has been removed from your list.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else
+                MessageBox.Show("An error has occurred when trying to remove friend from list.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            RefreshContent();
+        }
+
+        private void friendsContainer_DoubleClick(object sender, EventArgs e)
+        {
+            int selected = friendsContainer.SelectedIndex;
+
+            if (selected == -1)
+                return;
+
+            UserSession.SessionVars["NewMessageTo"] = friends[selected];
+
+            Program.ChangeForm(this, Program.newMailForm, false);
         }
     }
 }
