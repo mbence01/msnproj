@@ -46,6 +46,9 @@ namespace Messenger
             {
                 user.AddUserLog(User.LOGIN_TYPE_LOGIN);
 
+                user.Status = 1;
+                user.Update();
+
                 UserSession.LoggedInUser = user;
 
                 MessageBox.Show($"You are successfully logged in as {user.Username}!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);

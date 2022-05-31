@@ -20,7 +20,19 @@ namespace Messenger
 
         private void MailListForm_Load(object sender, EventArgs e)
         {
+            SetMailListColsWidth();
             UpdateList();
+        }
+
+        private void SetMailListColsWidth()
+        {
+            int width = mailList.Width;
+
+            mailList.Columns[0].Width = (int)(width * 0.1);
+            mailList.Columns[1].Width = (int)(width * 0.25);
+            mailList.Columns[2].Width = (int)(width * 0.25);
+            mailList.Columns[3].Width = (int)(width * 0.25);
+            mailList.Columns[4].Width = (int)(width * 0.15);
         }
 
         private void MailListForm_Close(object sender, System.ComponentModel.CancelEventArgs e)

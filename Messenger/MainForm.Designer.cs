@@ -44,6 +44,7 @@
             this.friendsContainer = new System.Windows.Forms.ListBox();
             this.addFriendBtn = new System.Windows.Forms.Button();
             this.removeFriendBtn = new System.Windows.Forms.Button();
+            this.friendReqContainer = new System.Windows.Forms.ListBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,8 +80,8 @@
             // refreshMailsToolStripMenuItem
             // 
             this.refreshMailsToolStripMenuItem.Name = "refreshMailsToolStripMenuItem";
-            this.refreshMailsToolStripMenuItem.Size = new System.Drawing.Size(89, 20);
-            this.refreshMailsToolStripMenuItem.Text = "Refresh mails";
+            this.refreshMailsToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+            this.refreshMailsToolStripMenuItem.Text = "Refresh";
             this.refreshMailsToolStripMenuItem.Click += new System.EventHandler(this.refreshMailsToolStripMenuItem_Click);
             // 
             // myProfileToolStripMenuItem
@@ -112,12 +113,11 @@
             this.columnHeader2,
             this.columnHeader3,
             this.columnHeader4});
-            this.mailList.Dock = System.Windows.Forms.DockStyle.Right;
             this.mailList.FullRowSelect = true;
             this.mailList.HideSelection = false;
             this.mailList.Location = new System.Drawing.Point(198, 24);
             this.mailList.Name = "mailList";
-            this.mailList.Size = new System.Drawing.Size(602, 426);
+            this.mailList.Size = new System.Drawing.Size(590, 303);
             this.mailList.TabIndex = 1;
             this.mailList.UseCompatibleStateImageBehavior = false;
             this.mailList.View = System.Windows.Forms.View.Details;
@@ -169,18 +169,30 @@
             // 
             // removeFriendBtn
             // 
-            this.removeFriendBtn.Location = new System.Drawing.Point(23, 401);
+            this.removeFriendBtn.Location = new System.Drawing.Point(23, 395);
             this.removeFriendBtn.Name = "removeFriendBtn";
             this.removeFriendBtn.Size = new System.Drawing.Size(152, 37);
             this.removeFriendBtn.TabIndex = 4;
             this.removeFriendBtn.Text = "Remove selected";
             this.removeFriendBtn.UseVisualStyleBackColor = true;
             // 
+            // friendReqContainer
+            // 
+            this.friendReqContainer.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.friendReqContainer.FormattingEnabled = true;
+            this.friendReqContainer.ItemHeight = 16;
+            this.friendReqContainer.Location = new System.Drawing.Point(198, 348);
+            this.friendReqContainer.Name = "friendReqContainer";
+            this.friendReqContainer.Size = new System.Drawing.Size(590, 84);
+            this.friendReqContainer.TabIndex = 5;
+            this.friendReqContainer.DoubleClick += new System.EventHandler(this.friendReqContainer_DoubleClick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.friendReqContainer);
             this.Controls.Add(this.removeFriendBtn);
             this.Controls.Add(this.addFriendBtn);
             this.Controls.Add(this.friendsContainer);
@@ -215,5 +227,6 @@
         private System.Windows.Forms.ListBox friendsContainer;
         private System.Windows.Forms.Button addFriendBtn;
         private System.Windows.Forms.Button removeFriendBtn;
+        private System.Windows.Forms.ListBox friendReqContainer;
     }
 }

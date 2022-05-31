@@ -12,29 +12,62 @@ namespace Messenger
 {
     public partial class MainForm : Form
     {
+        private User[] friends;
+        private FriendRequest[] requests;
+
         public MainForm()
         {
             InitializeComponent();
             this.FormClosing += Main_Closing;
         }
 
-        private void UpdateFriendList()
+        private void UpdateFriendRequests()
         {
-            List<User> friendList = UserSession.LoggedInUser.GetFriends();
+            friendReqContainer.Items.Clear();
 
-            if (friendList == null)
+            List<FriendRequest> friendReqList = UserSession.LoggedInUser.GetFriendRequests();
+
+            if (friendReqList == null || friendReqList.Count == 0)
                 return;
 
-            foreach (User friend in friendList)
+            requests = new FriendRequest[friendReqList.Count];
+
+            foreach(var iterator in friendReqList.Select((Value, Index) => new { Value, Index }))
             {
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append(friend.Username);
+                sb.Append(iterator.Value.User1.Username);
+                sb.Append(" wants to be your friend.");
+
+                friendReqContainer.Items.Add(sb.ToString());
+
+                requests[iterator.Index] = iterator.Value;
+            }
+        }
+
+        private void UpdateFriendList()
+        {
+            friendsContainer.Items.Clear();
+
+            List<User> friendList = UserSession.LoggedInUser.GetFriends();
+
+            if (friendList == null || friendList.Count == 0)
+                return;
+
+            friends = new User[friendList.Count];
+
+            foreach (var iterator in friendList.Select((Value, Index) => new { Value, Index }))
+            {
+                StringBuilder sb = new StringBuilder();
+
+                sb.Append(iterator.Value.Username);
                 sb.Append(" (");
-                sb.Append((friend.Status == 1) ? "Online" : "Offline");
+                sb.Append((iterator.Value.Status == 1) ? "Online" : "Offline");
                 sb.Append(")");
 
                 friendsContainer.Items.Add(sb.ToString());
+
+                friends[iterator.Index] = iterator.Value;
             }
         }
 
@@ -65,8 +98,18 @@ namespace Messenger
             }
         }
 
+        private void RefreshContent()
+        {
+            UpdateList();
+            UpdateFriendList();
+            UpdateFriendRequests();
+        }
+
         private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            UserSession.LoggedInUser.Status = 0;
+            UserSession.LoggedInUser.Update();
+
             Application.Exit();
         }
 
@@ -78,8 +121,19 @@ namespace Messenger
 
                 Program.ChangeForm(this, new LoginForm());
             }
-            UpdateList();
-            UpdateFriendList();
+            SetMailListColsWidth();
+            RefreshContent();
+        }
+
+        private void SetMailListColsWidth()
+        {
+            int width = mailList.Width;
+
+            mailList.Columns[0].Width = (int)(width * 0.05);
+            mailList.Columns[1].Width = (int)(width * 0.275);
+            mailList.Columns[2].Width = (int)(width * 0.2);
+            mailList.Columns[3].Width = (int)(width * 0.275);
+            mailList.Columns[4].Width = (int)(width * 0.2);
         }
 
         private void logOutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -141,7 +195,7 @@ namespace Messenger
 
         private void refreshMailsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UpdateList();
+            RefreshContent();
         }
 
         private void myMailsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -172,6 +226,7 @@ namespace Messenger
                 return;
 
 
+            bool foundNeedle = false;
             bool addFriendReqResult = false;
             List<User> userWithUsername = User.FindBy(input);
 
@@ -180,16 +235,60 @@ namespace Messenger
                 int id = User.IsEmailAddrExists(input);
 
                 if(id != 0)
+                {
+                    foundNeedle = true;
                     addFriendReqResult = UserSession.LoggedInUser.AddFriendRequest(id);
+                }
             } else
             {
+                foundNeedle = true;
                 addFriendReqResult = UserSession.LoggedInUser.AddFriendRequest(userWithUsername[0].Id);
+            }
+
+            if(!foundNeedle)
+            {
+                MessageBox.Show("Cannot find user associated with the given name.", "Request failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
             if (addFriendReqResult)
                 MessageBox.Show("Your request has been sent to " + input, "Request sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
-                MessageBox.Show("An error has occurred when trying to save your request. Maybe you are already friends or a request has already been sent.", "Request failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("An error has occurred when trying to save your request. Maybe you are already friends or a request has already been sent.", "Request failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            
+            window.Hide();
+        }
+
+        private void friendReqContainer_DoubleClick(object sender, EventArgs e)
+        {
+            FriendRequest req = requests[friendReqContainer.SelectedIndex];
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("Are you sure you want to accept ");
+            sb.Append(req.User1.Username);
+            sb.Append("'s friend request?");
+
+            DialogResult res = MessageBox.Show(sb.ToString(), req.User1.Username, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+            if (res.ToString().Equals("Yes"))
+            {
+                if (req.Accept())
+                {
+                    sb.Clear();
+
+                    sb.Append("Friend request has been accepted. You and ");
+                    sb.Append(req.User1.Username);
+                    sb.Append(" are now friends.");
+
+                    MessageBox.Show(sb.ToString(), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("An error has occurred when trying to accept the request. Try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                RefreshContent();
+            }
         }
     }
 }
