@@ -67,8 +67,6 @@ namespace Messenger
 
                 this.Hide();
             }
-
-            Console.WriteLine(res.ToString());
         }
 
         private void replyBtn_Click(object sender, EventArgs e)
