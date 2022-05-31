@@ -404,8 +404,13 @@ namespace Messenger
 
                 cmd.Parameters.Add(idParam);
 
-                idParam.ParameterName = "@startid";
-                cmd.Parameters.Add(idParam);
+                SqlParameter id2Param = new SqlParameter("@startid", this.Id)
+                {
+                    DbType = System.Data.DbType.Int32,
+                    Size = 11
+                };
+                
+                cmd.Parameters.Add(id2Param);
                 
                 int rowsAffected = cmd.ExecuteNonQuery();
                 return rowsAffected > 0;

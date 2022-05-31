@@ -193,6 +193,8 @@ namespace Messenger
 
                     cmd.Prepare();
 
+                    Console.WriteLine(sqlCmd);
+
                     int rowsAffected = cmd.ExecuteNonQuery();
 
                     if (rowsAffected == 0)
@@ -253,7 +255,7 @@ namespace Messenger
             if (password == null)
                 sqlCmd = "SELECT Users.ID AS ID FROM Users WHERE Username = @username";
             else
-                sqlCmd = "SELECT Users.ID AS ID FROM Users INNER JOIN UserPasswords ON Users.ID = UserPasswords.UserID WHERE Username = @username AND PasswordHash = @password";
+                sqlCmd = "SELECT Users.ID AS ID FROM Users INNER JOIN UserPasswords ON Users.ID = UserPasswords.UserID WHERE Username = @username AND PasswordHash = @password AND UserPasswords.CreatedAt = (SELECT TOP(1) CreatedAt FROM UserPasswords WHERE UserID = Users.ID ORDER BY CreatedAt DESC)";
 
 
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -270,16 +272,19 @@ namespace Messenger
                         Size = 32
                     };
 
-                    SqlParameter passwordParam = new SqlParameter("@password", CreateHashedPassword(password))
+
+                    if(password != null)
                     {
-                        DbType = System.Data.DbType.String,
-                        Size = 64
-                    };
+                        SqlParameter passwordParam = new SqlParameter("@password", CreateHashedPassword(password))
+                        {
+                            DbType = System.Data.DbType.String,
+                            Size = 64
+                        };
+                        cmd.Parameters.Add(passwordParam);
+                    }
+
 
                     cmd.Parameters.Add(usernameParam);
-
-                    if (password != null)
-                        cmd.Parameters.Add(passwordParam);
 
                     cmd.Prepare();
 
@@ -296,9 +301,62 @@ namespace Messenger
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine(e.StackTrace);
                     Console.WriteLine(
                         System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
                         System.Reflection.MethodBase.GetCurrentMethod().Name + 
+                        " -> " + e.Message);
+                    return null;
+                }
+            }
+            return retArr;
+        }
+
+        public List<FriendRequest> GetFriendRequests()
+        {
+            List<FriendRequest> retArr = new List<FriendRequest>();
+            string sqlCmd = "SELECT * FROM FriendRequests WHERE User2 = @userid AND Accepted = 0";
+
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(sqlCmd, conn);
+
+                    SqlParameter idParam = new SqlParameter("@userid", this.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    cmd.Parameters.Add(idParam);
+
+                    cmd.Prepare();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id           = (int)reader.GetValue(reader.GetOrdinal("ID"));
+                            int user1        = (int)reader.GetValue(reader.GetOrdinal("User1"));
+                            int user2        = (int)reader.GetValue(reader.GetOrdinal("User2"));
+                            DateTime reqDate = DateTime.Parse(reader.GetValue(reader.GetOrdinal("RequestDate")).ToString());
+
+                            User userObj1 = new User(user1);
+                            User userObj2 = new User(user2);
+
+                            retArr.Add(new FriendRequest(id, userObj1, userObj2, reqDate));
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(
+                        System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
+                        System.Reflection.MethodBase.GetCurrentMethod().Name +
                         " -> " + e.Message);
                     return null;
                 }
