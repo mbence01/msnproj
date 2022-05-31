@@ -22,23 +22,33 @@ namespace Messenger
 
         private void NewMailForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Console.WriteLine("asd");
             Program.newMailForm = new NewMailForm();
         }
 
         private void NewMailForm_Load(object sender, EventArgs e)
         {
-            object reply;
+            object reply, addressee;
             Mail parentMail = null;
 
-            if(UserSession.SessionVars.TryGetValue("MailReply", out reply))
+            if(UserSession.SessionVars.TryGetValue("NewMessageTo", out addressee))
+            {
+                if(addressee != null)
+                {
+                    User address = (User)addressee;
+
+                    textTo.Text = address.Email;
+                }
+                UserSession.SessionVars.Remove("NewMessageTo");
+            }
+            else if(UserSession.SessionVars.TryGetValue("MailReply", out reply))
             {
                 parentMail = (Mail)reply;
                 parentMailId = parentMail.Id;
-            } else
-            {
-                parentMailId = null;
-            }
+
+                UserSession.SessionVars.Remove("MailReply");
+            } 
+            else parentMailId = null;
+
 
             if(parentMailId.HasValue)
             {
