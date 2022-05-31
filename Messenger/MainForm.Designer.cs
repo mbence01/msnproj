@@ -155,7 +155,7 @@
             this.friendsContainer.Name = "friendsContainer";
             this.friendsContainer.Size = new System.Drawing.Size(172, 303);
             this.friendsContainer.TabIndex = 2;
-            this.friendsContainer.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.friendsContainer.DoubleClick += new System.EventHandler(this.friendsContainer_DoubleClick);
             // 
             // addFriendBtn
             // 
@@ -175,6 +175,7 @@
             this.removeFriendBtn.TabIndex = 4;
             this.removeFriendBtn.Text = "Remove selected";
             this.removeFriendBtn.UseVisualStyleBackColor = true;
+            this.removeFriendBtn.Click += new System.EventHandler(this.removeFriendBtn_Click);
             // 
             // friendReqContainer
             // 
