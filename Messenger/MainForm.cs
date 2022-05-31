@@ -316,5 +316,10 @@ namespace Messenger
 
             Program.ChangeForm(this, Program.newMailForm, false);
         }
+
+        private void myProfileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.ChangeForm(this, Program.profileForm, false);
+        }
     }
 }
