@@ -12,8 +12,8 @@ namespace Messenger
 {
     public partial class RegForm : Form
     {
-        private static int USERNAME_MIN_LENGTH = 6;
-        private static int PASSWORD_MIN_LENGTH = 6;
+        public static int USERNAME_MIN_LENGTH = 6;
+        public static int PASSWORD_MIN_LENGTH = 6;
 
         public RegForm()
         {
