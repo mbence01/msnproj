@@ -145,71 +145,70 @@ namespace Messenger
             if (id == 0)
                 return new List<object>() { -1, "ID of User instance is not set. Set the ID and try again." };
 
-            string sqlCmd = "UPDATE Users SET Users.Username = @username, Users.EmailAddr = @email, UserStatus = @userstatus, UserPasswords.PasswordHash = @hash FROM Users INNER JOIN UserPasswords ON Users.ID = UserPasswords.UserID WHERE Users.ID = @userid";
-            
-            using (SqlConnection conn = new SqlConnection(connStr))
+
+            string sqlCmd = "update_user";
+
+            using(SqlConnection conn = new SqlConnection(connStr))
             {
                 try
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand(sqlCmd, conn);
-
-                    SqlParameter useridParam = new SqlParameter("@userid", this.id)
+                    SqlCommand cmd = new SqlCommand(sqlCmd, conn)
                     {
-                        DbType = System.Data.DbType.Int32,
-                        Size = 11
+                        CommandType = System.Data.CommandType.StoredProcedure
                     };
 
-                    SqlParameter usernameParam = new SqlParameter("@username", this.username)
+                    SqlParameter usernameParam = new SqlParameter("@username", this.Username)
                     {
                         DbType = System.Data.DbType.String,
                         Size = 32
                     };
 
-                    SqlParameter emailParam = new SqlParameter("@email", this.email)
+                    SqlParameter emailParam = new SqlParameter("@email", this.Email)
                     {
                         DbType = System.Data.DbType.String,
                         Size = 64
                     };
 
-                    SqlParameter pwdhashParam = new SqlParameter("@hash", this.password)
-                    {
-                        DbType = System.Data.DbType.String,
-                        Size = 64
-                    };
-
-                    SqlParameter statusParam = new SqlParameter("@userstatus", this.status)
+                    SqlParameter statusParam = new SqlParameter("@status", this.Status)
                     {
                         DbType = System.Data.DbType.Int32,
                         Size = 11
                     };
 
-                    cmd.Parameters.Add(useridParam);
+                    SqlParameter pwdParam = new SqlParameter("@pwdHash", this.Password)
+                    {
+                        DbType = System.Data.DbType.String,
+                        Size = 64
+                    };
+
+                    SqlParameter idParam = new SqlParameter("@id", this.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
                     cmd.Parameters.Add(usernameParam);
                     cmd.Parameters.Add(emailParam);
-                    cmd.Parameters.Add(pwdhashParam);
                     cmd.Parameters.Add(statusParam);
+                    cmd.Parameters.Add(pwdParam);
+                    cmd.Parameters.Add(idParam);
 
                     cmd.Prepare();
+                    cmd.ExecuteNonQuery();
 
-                    Console.WriteLine(sqlCmd);
-
-                    int rowsAffected = cmd.ExecuteNonQuery();
-
-                    if (rowsAffected == 0)
-                        return new List<object>() { -1, "User has not been updated. Unknown error occurred." };
+                    return new List<object>() { 0, "User has successfully been updated in database." }; ;
                 }
-                catch (Exception e)
+                catch(Exception e) when(e is SqlException || e is InvalidOperationException)
                 {
                     Console.WriteLine(
-                        System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
-                        System.Reflection.MethodBase.GetCurrentMethod().Name +
-                        " -> " + e.Message);
+                           System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
+                           System.Reflection.MethodBase.GetCurrentMethod().Name +
+                           " -> " + e.Message);
                     return new List<object>() { -1, e.Message };
                 }
             }
-            return new List<object>() { 0, "User has successfully been updated in database." };
         }
 
         public static User AddNew(string username, string password, string email)
@@ -362,6 +361,50 @@ namespace Messenger
                 }
             }
             return retArr;
+        }
+
+        public bool RemoveFriend(User other)
+        {
+            string sqlCmd = "DELETE FROM Friends WHERE (User1 = @user1 AND User2 = @user2) OR (User1 = @user2 AND User2 = @user1)";
+
+            using(SqlConnection conn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(sqlCmd, conn);
+
+                    SqlParameter user1Param = new SqlParameter("@user1", this.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    SqlParameter user2Param = new SqlParameter("@user2", other.Id)
+                    {
+                        DbType = System.Data.DbType.Int32,
+                        Size = 11
+                    };
+
+                    cmd.Parameters.Add(user1Param);
+                    cmd.Parameters.Add(user2Param);
+
+                    cmd.Prepare();
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    return rowsAffected > 0;
+                }
+                catch(Exception e) when(e is SqlException || e is InvalidOperationException)
+                {
+                    Console.WriteLine(
+                        System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ":" +
+                        System.Reflection.MethodBase.GetCurrentMethod().Name +
+                        " -> " + e.Message);
+                    return false;
+                }
+            }
         }
 
         public List<User> GetFriends()
